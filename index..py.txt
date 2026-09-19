@@ -17,10 +17,13 @@ def ask_gemini(q):
         data = r.json()
         return data["candidates"][0]["content"]["parts"][0]["text"]
     except Exception as e:
-        print(e, data if 'data' in locals() else "")
         return "Try again: Example - Sweden POF?"
 
-@app.route('/webhook', methods=['POST'])
+@app.route('/', methods=['GET'])
+def home():
+    return "Japa Bot is live"
+
+@app.route('/', methods=['POST'])
 def webhook():
     update = request.get_json()
     if "message" in update and "text" in update["message"]:
@@ -32,7 +35,3 @@ def webhook():
             reply = ask_gemini(text) + "\n\n📘 www.japablueprint.com.ng"
         requests.post(f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage", json={"chat_id": chat_id, "text": reply})
     return "ok"
-
-@app.route('/')
-def home():
-    return "Japa Bot is live"
